@@ -7,12 +7,12 @@
   var Views = global.Views = global.Views || {};
 
   var POR_PAGINA = 15;
-  var filtro = { texto: "", edificio: "", tipo: "", pagina: 1 };
+  var filtro = { texto: "", pabellon: "", tipo: "", pagina: 1 };
 
   function formulario(aula, onSave) {
     var esNueva = !aula;
     var a = aula || {
-      codigo: "", nombre: "", edificio: Store.EDIFICIOS[0], planta: 0,
+      codigo: "", nombre: "", pabellon: Store.PABELLONES[0], piso: 0,
       tipo: "Aula", capacidad: 40, equipamiento: [], requiereAutorizacion: false, activa: true, nota: ""
     };
 
@@ -22,10 +22,10 @@
           '<input type="text" id="au-nombre" value="' + Utils.esc(a.nombre) + '" placeholder="Aula 201"></div>' +
         '<div class="field"><label for="au-codigo">Código</label>' +
           '<input type="text" id="au-codigo" value="' + Utils.esc(a.codigo) + '" placeholder="A-201"></div>' +
-        '<div class="field"><label for="au-edificio">Edificio</label>' +
-          '<select id="au-edificio">' + UI.options(Store.EDIFICIOS, a.edificio) + "</select></div>" +
-        '<div class="field"><label for="au-planta">Planta</label>' +
-          '<input type="number" id="au-planta" min="0" max="10" value="' + a.planta + '"></div>' +
+        '<div class="field"><label for="au-pabellon">Pabellón</label>' +
+          '<select id="au-pabellon">' + UI.options(Store.PABELLONES, a.pabellon) + "</select></div>" +
+        '<div class="field"><label for="au-piso">Piso (0 = planta baja)</label>' +
+          '<input type="number" id="au-piso" min="0" max="6" value="' + a.piso + '"></div>' +
         '<div class="field"><label for="au-tipo">Tipo</label>' +
           '<select id="au-tipo">' + UI.options(Store.TIPOS, a.tipo) + "</select></div>" +
         '<div class="field"><label for="au-cap">Aforo</label>' +
@@ -57,8 +57,8 @@
             var datos = {
               nombre: UI.$("#au-nombre", b).value.trim(),
               codigo: UI.$("#au-codigo", b).value.trim(),
-              edificio: UI.$("#au-edificio", b).value,
-              planta: UI.$("#au-planta", b).value,
+              pabellon: UI.$("#au-pabellon", b).value,
+              piso: UI.$("#au-piso", b).value,
               tipo: UI.$("#au-tipo", b).value,
               capacidad: UI.$("#au-cap", b).value,
               equipamiento: UI.$$(".chip.is-on", b).map(function (c) { return c.getAttribute("data-equipo"); }),
@@ -104,7 +104,7 @@
             '<div class="card__head"><h3>' + UI.icon("edificio", 16) + " Espacios registrados</h3>" +
               '<div class="spacer row">' +
                 '<input type="search" id="au-buscar" placeholder="Buscar aula…" style="width:190px" value="' + Utils.esc(filtro.texto) + '">' +
-                '<select id="au-f-edificio" style="width:180px">' + UI.options(Store.EDIFICIOS, filtro.edificio, "Todos los edificios") + "</select>" +
+                '<select id="au-f-pabellon" style="width:170px">' + UI.options(Store.PABELLONES, filtro.pabellon, "Todos los pabellones") + "</select>" +
                 '<select id="au-f-tipo" style="width:190px">' + UI.options(Store.TIPOS, filtro.tipo, "Todos los tipos") + "</select>" +
                 (Store.esRol("admin") ? '<button class="btn btn--sm btn--primary" id="au-nueva">' + UI.icon("mas", 15) + " Nuevo espacio</button>" : "") +
               "</div>" +
@@ -120,10 +120,10 @@
 
       function pintar() {
         var lista = Store.aulas().filter(function (a) {
-          if (filtro.edificio && a.edificio !== filtro.edificio) return false;
+          if (filtro.pabellon && a.pabellon !== filtro.pabellon) return false;
           if (filtro.tipo && a.tipo !== filtro.tipo) return false;
           if (filtro.texto) {
-            var blob = Utils.norm(a.nombre + " " + a.codigo + " " + a.edificio + " " + a.tipo);
+            var blob = Utils.norm(a.nombre + " " + a.codigo + " " + a.pabellon + " " + a.tipo);
             if (blob.indexOf(Utils.norm(filtro.texto)) === -1) return false;
           }
           return true;
@@ -144,8 +144,8 @@
               }).length;
               return "<tr>" +
                 '<td class="cell-strong">' + Utils.esc(a.nombre) + '<span class="cell-sub">' + Utils.esc(a.codigo) + "</span></td>" +
-                "<td>" + Utils.esc(a.edificio) +
-                  '<span class="cell-sub">' + (a.planta === 0 ? "Planta baja" : "Planta " + a.planta) + "</span></td>" +
+                "<td>" + Utils.esc(a.pabellon) +
+                  '<span class="cell-sub">' + (a.piso === 0 ? "Planta baja" : "Piso " + a.piso) + "</span></td>" +
                 "<td>" + Utils.esc(a.tipo) +
                   (a.requiereAutorizacion ? '<span class="cell-sub">requiere autorización</span>' : "") + "</td>" +
                 '<td class="tnum">' + a.capacidad + "</td>" +
@@ -165,7 +165,7 @@
       }
 
       UI.$("#au-buscar", root).addEventListener("input", function () { filtro.texto = this.value; filtro.pagina = 1; pintar(); });
-      UI.$("#au-f-edificio", root).addEventListener("change", function () { filtro.edificio = this.value; filtro.pagina = 1; pintar(); });
+      UI.$("#au-f-pabellon", root).addEventListener("change", function () { filtro.pabellon = this.value; filtro.pagina = 1; pintar(); });
       UI.$("#au-f-tipo", root).addEventListener("change", function () { filtro.tipo = this.value; filtro.pagina = 1; pintar(); });
       if (esAdmin) UI.$("#au-nueva", root).addEventListener("click", function () { formulario(null, pintar); });
 

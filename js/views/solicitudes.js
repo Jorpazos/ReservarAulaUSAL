@@ -72,7 +72,7 @@
                 '<td class="cell-strong">' + Utils.esc(u ? u.nombre : "—") +
                   '<span class="cell-sub">' + (u ? Utils.esc(Store.ROLES[u.rol].nombre + " · " + u.departamento) : "") + "</span></td>" +
                 '<td class="cell-strong">' + Utils.esc(a ? a.nombre : "—") +
-                  '<span class="cell-sub">' + Utils.esc(a ? a.edificio : "") + "</span></td>" +
+                  '<span class="cell-sub">' + Utils.esc(a ? a.pabellon : "") + "</span></td>" +
                 '<td class="nowrap">' + Utils.fechaCorta(r.fecha) +
                   '<span class="cell-sub tnum">' + Utils.hora(r.horaInicio) + " – " + Utils.hora(r.horaFin) + "</span></td>" +
                 "<td>" + Utils.esc(r.asunto) + '<span class="cell-sub">' + Utils.esc(r.asignatura) + "</span></td>" +

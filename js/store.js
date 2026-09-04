@@ -94,13 +94,33 @@
         .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
     },
 
-    plural: function (n, sing, plu) { return n + " " + (n === 1 ? sing : plu); }
+    plural: function (n, sing, plu) { return n + " " + (n === 1 ? sing : plu); },
+
+    capital: function (s) {
+      s = String(s || "");
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    },
+
+    /** [1,3] -> "Lunes y miércoles" */
+    diasTexto: function (dias) {
+      var nombres = (dias || []).map(function (d) { return DIAS[d]; });
+      if (!nombres.length) return "—";
+      if (nombres.length === 1) return Utils.capital(nombres[0]);
+      return Utils.capital(nombres.slice(0, -1).join(", ")) + " y " + nombres[nombres.length - 1];
+    },
+
+    /** [1,3] -> "Lu · Mi" */
+    diasCorto: function (dias) {
+      return (dias || []).map(function (d) {
+        return Utils.capital(DIAS[d].slice(0, 2));
+      }).join(" · ");
+    }
   };
 
   /* ---------------------------------------------------------------------
      Constantes del dominio
      --------------------------------------------------------------------- */
-  var KEY = "reservaaulas.usal.v2";
+  var KEY = "reservaaulas.usal.v3";
 
   var HORA_INICIO = 8;   // primera franja: 08:00
   var HORA_FIN = 21;     // última franja termina a las 21:00
@@ -119,13 +139,82 @@
     cancelada:  { id: "cancelada",  nombre: "Cancelada",  pill: "pill--soft" }
   };
 
-  var EDIFICIOS = ["Edificio Central", "Edificio Politécnico", "Edificio Anexo", "Centro Tecnológico"];
+  // La facultad es un único edificio dividido en dos pabellones.
+  var PABELLONES = ["Pabellón 1", "Pabellón 2"];
 
   var TIPOS = ["Aula", "Aula Magna", "Seminario", "Laboratorio Informático", "Laboratorio de Robótica"];
 
   var EQUIPAMIENTO = [
     "Proyector", "Pizarra digital", "Ordenadores", "Megafonía",
     "Videoconferencia", "Enchufes por puesto", "Brazo robótico"
+  ];
+
+  var TURNOS = {
+    manana: { id: "manana", nombre: "Mañana", rango: "08:00 a 12:00", hIni: 8,  hFin: 12, sigla: "M" },
+    tarde:  { id: "tarde",  nombre: "Tarde",  rango: "14:00 a 18:00", hIni: 14, hFin: 18, sigla: "T" },
+    noche:  { id: "noche",  nombre: "Noche",  rango: "19:00 a 22:00", hIni: 19, hFin: 22, sigla: "N" }
+  };
+
+  // Plan de estudios · Ingeniero en Informática  [nombre, año, A anual / C cuatrimestral]
+  var PLAN = [
+    ["Introducción a la Administración de Empresas", 1, "C"],
+    ["Sistemas Numéricos", 1, "C"],
+    ["Análisis Matemático I", 1, "A"],
+    ["Metodología de la Investigación", 1, "C"],
+    ["Introducción a la Programación", 1, "C"],
+    ["Arquitectura de Computadoras", 1, "C"],
+    ["Álgebra I", 1, "C"],
+    ["Paradigmas de Programación", 1, "C"],
+    ["Programación I", 1, "C"],
+
+    ["Sistemas de Representación", 2, "C"],
+    ["Física I", 2, "C"],
+    ["Cálculo Numérico", 2, "C"],
+    ["Estructuras de Datos y Algoritmos", 2, "A"],
+    ["Sistemas de Información I", 2, "A"],
+    ["Álgebra II", 2, "C"],
+    ["Filosofía", 2, "C"],
+    ["Programación II", 2, "C"],
+    ["Teoría de Lenguajes", 2, "C"],
+    ["Análisis Matemático II", 2, "C"],
+
+    ["Química General", 3, "C"],
+    ["Física II", 3, "C"],
+    ["Sistemas Operativos", 3, "A"],
+    ["Sistemas de Información II", 3, "A"],
+    ["Sistemas de Bases de Datos", 3, "A"],
+    ["Probabilidad y Estadística", 3, "A"],
+    ["Programación Avanzada", 3, "A"],
+    ["Teleinformática", 3, "C"],
+    ["Física III", 3, "C"],
+    ["Inglés I", 3, ""],
+    ["Inglés II", 3, ""],
+
+    ["Tecnología Informática", 4, "C"],
+    ["Ingeniería del Software", 4, "C"],
+    ["Seminario de Integración Profesional", 4, "A"],
+    ["Investigación Operativa", 4, "C"],
+    ["Arquitectura de Redes", 4, "C"],
+    ["Dirección de Proyectos Informáticos", 4, "C"],
+    ["Auditoría de Sistemas", 4, "C"],
+    ["Teología", 4, "C"],
+    ["Modelos y Simulación", 4, "C"],
+
+    ["Derecho Informático", 5, "C"],
+    ["Ética Profesional", 5, "C"],
+    ["Tecnologías Emergentes", 5, "A"],
+    ["Sistemas Inteligentes", 5, "A"],
+    ["Proyecto Final de Ingeniería en Informática", 5, "A"],
+    ["Gestión Ambiental", 5, "C"],
+    ["Aseguramiento de la Calidad del Software", 5, "C"],
+    ["Seguridad Informática", 5, "C"],
+    ["Elementos de Economía", 5, "C"]
+  ];
+
+  var DOCENTES = [
+    "Ing. Roberto Díaz", "Lic. Silvia Ferrari", "Ing. Marcos Pereyra", "Dra. Andrea Sosa",
+    "Ing. Pablo Herrera", "Lic. Nadia Rossi", "Ing. Gustavo Molina", "Dra. Carolina Vega",
+    "Ing. Federico Bustos", "Lic. Mariana Ledesma"
   ];
 
   /* ---------------------------------------------------------------------
@@ -136,10 +225,10 @@
     var id = 1;
 
     for (var n = 1; n <= 200; n++) {
-      var edificio, planta;
-      if (n <= 80)       { edificio = "Edificio Central";     planta = Math.ceil(n / 20) - 1; }
-      else if (n <= 150) { edificio = "Edificio Politécnico"; planta = Math.ceil((n - 80) / 18) - 1; }
-      else               { edificio = "Edificio Anexo";       planta = Math.ceil((n - 150) / 17) - 1; }
+      // Un solo edificio: aulas 1-100 en el Pabellón 1 y 101-200 en el Pabellón 2.
+      // Dentro de cada pabellón, 25 aulas por piso (planta baja + 3 pisos).
+      var pabellon = n <= 100 ? "Pabellón 1" : "Pabellón 2";
+      var piso = Math.floor(((n - 1) % 100) / 25);
 
       var tipo, capacidad, equipo;
       if (n % 25 === 0) {
@@ -164,8 +253,8 @@
         id: id++,
         codigo: "A-" + String(n).padStart(3, "0"),
         nombre: "Aula " + n,
-        edificio: edificio,
-        planta: planta,
+        pabellon: pabellon,
+        piso: piso,
         tipo: tipo,
         capacidad: capacidad,
         equipamiento: equipo,
@@ -198,8 +287,8 @@
         id: id++,
         codigo: "CT-" + c.n,
         nombre: "Centro Tecnológico " + c.n,
-        edificio: "Centro Tecnológico",
-        planta: 0,
+        pabellon: "Pabellón 2",
+        piso: 0,
         tipo: c.tipo,
         capacidad: c.cap,
         equipamiento: c.equipo,
@@ -210,6 +299,82 @@
     });
 
     return aulas;
+  }
+
+  /** Materias del plan de estudios de Ingeniería en Informática. */
+  function seedMaterias() {
+    return PLAN.map(function (m, i) {
+      return { id: i + 1, nombre: m[0], anio: m[1], tipo: m[2] };
+    });
+  }
+
+  /**
+   * Cursadas: para cada materia se generan sus comisiones por turno con el
+   * aula, los días y el horario asignados. El reparto es determinista y evita
+   * que dos cursadas coincidan en el mismo espacio, día y franja.
+   */
+  function seedCursadas(aulas, materias) {
+    var LAB_PC = /programaci|estructuras de datos|bases de datos|sistemas operativos|c[áa]lculo num[ée]rico|teor[íi]a de lenguajes|ingenier[íi]a del software|calidad del software|teleinform/i;
+    var LAB_ROBOT = /sistemas inteligentes|tecnolog[íi]as emergentes/i;
+
+    var comunes = aulas.filter(function (a) {
+      return a.tipo === "Aula" || a.tipo === "Aula Magna" || a.tipo === "Seminario";
+    });
+    var salasPC = aulas.filter(function (a) { return a.tipo === "Laboratorio Informático"; });
+    var salaRobot = aulas.filter(function (a) { return a.tipo === "Laboratorio de Robótica"; });
+
+    // Combinaciones de turnos: no todas las materias se dictan en los tres.
+    var combos = [["manana", "noche"], ["tarde", "noche"], ["manana", "tarde", "noche"]];
+    var ocupado = {};   // "aulaId|dia|hora" -> true
+    var cursadas = [];
+    var id = 1;
+
+    materias.forEach(function (m, i) {
+      var pool = LAB_ROBOT.test(m.nombre) ? salaRobot : LAB_PC.test(m.nombre) ? salasPC : comunes;
+
+      combos[i % 3].forEach(function (turnoId, t) {
+        var turno = TURNOS[turnoId];
+        var hIni = turno.hIni + ((i + t) % 2) * 2;
+        var hFin = hIni + 2;
+        if (hFin > turno.hFin) { hIni = turno.hIni; hFin = hIni + 2; }
+
+        var dias = m.tipo === "A"
+          ? ((i % 2) ? [1, 3] : [2, 4])          // anuales: dos días por semana
+          : [((i + t) % 5) + 1];                 // cuatrimestrales: un día
+
+        // Busca en el pool la primera aula libre en todos esos días y horas.
+        var elegida = null;
+        for (var k = 0; k < pool.length && !elegida; k++) {
+          var cand = pool[(i * 7 + t * 13 + k) % pool.length];
+          var libre = dias.every(function (d) {
+            for (var h = hIni; h < hFin; h++) {
+              if (ocupado[cand.id + "|" + d + "|" + h]) return false;
+            }
+            return true;
+          });
+          if (libre) elegida = cand;
+        }
+        if (!elegida) return;
+
+        dias.forEach(function (d) {
+          for (var h = hIni; h < hFin; h++) ocupado[elegida.id + "|" + d + "|" + h] = true;
+        });
+
+        cursadas.push({
+          id: id++,
+          materiaId: m.id,
+          turno: turnoId,
+          aulaId: elegida.id,
+          dias: dias,
+          horaInicio: hIni,
+          horaFin: hFin,
+          docente: DOCENTES[(i * 3 + t) % DOCENTES.length],
+          comision: m.anio + turno.sigla
+        });
+      });
+    });
+
+    return cursadas;
   }
 
   function seedUsuarios() {
@@ -287,10 +452,13 @@
 
   function nuevaBase() {
     var aulas = seedAulas();
+    var materias = seedMaterias();
     return {
-      version: 2,
+      version: 3,
       usuarios: seedUsuarios(),
       aulas: aulas,
+      materias: materias,
+      cursadas: seedCursadas(aulas, materias),
       reservas: seedReservas(aulas),
       sesion: null
     };
@@ -309,7 +477,8 @@
       var raw = localStorage.getItem(KEY);
       if (raw) {
         var parsed = JSON.parse(raw);
-        if (parsed && parsed.version === 2 && parsed.aulas && parsed.usuarios) return parsed;
+        if (parsed && parsed.version === 3 && parsed.aulas && parsed.usuarios &&
+            parsed.materias && parsed.cursadas) return parsed;
       }
     } catch (e) {
       console.warn("Datos guardados no válidos, se regeneran:", e);
@@ -329,9 +498,10 @@
     HORA_FIN: HORA_FIN,
     ROLES: ROLES,
     ESTADOS: ESTADOS,
-    EDIFICIOS: EDIFICIOS,
+    PABELLONES: PABELLONES,
     TIPOS: TIPOS,
     EQUIPAMIENTO: EQUIPAMIENTO,
+    TURNOS: TURNOS,
 
     init: function () {
       db = cargar() || nuevaBase();
@@ -470,8 +640,8 @@
         id: nextId(db.aulas),
         codigo: datos.codigo.trim(),
         nombre: datos.nombre.trim(),
-        edificio: datos.edificio,
-        planta: Number(datos.planta) || 0,
+        pabellon: datos.pabellon,
+        piso: Number(datos.piso) || 0,
         tipo: datos.tipo,
         capacidad: Number(datos.capacidad) || 0,
         equipamiento: datos.equipamiento || [],
@@ -496,8 +666,8 @@
 
       a.codigo = datos.codigo.trim();
       a.nombre = datos.nombre.trim();
-      a.edificio = datos.edificio;
-      a.planta = Number(datos.planta) || 0;
+      a.pabellon = datos.pabellon;
+      a.piso = Number(datos.piso) || 0;
       a.tipo = datos.tipo;
       a.capacidad = Number(datos.capacidad) || 0;
       a.equipamiento = datos.equipamiento || [];
@@ -517,6 +687,100 @@
         return { ok: false, error: "El espacio tiene reservas activas. Desactívalo en lugar de eliminarlo." };
       }
       db.aulas = db.aulas.filter(function (a) { return a.id !== id; });
+      guardar();
+      return { ok: true };
+    },
+
+    /* --- Materias y cursadas ------------------------------------------ */
+    materias: function () {
+      return db.materias.slice().sort(function (a, b) {
+        return a.anio === b.anio ? a.nombre.localeCompare(b.nombre, "es") : a.anio - b.anio;
+      });
+    },
+
+    materia: function (id) {
+      return db.materias.find(function (m) { return m.id === id; }) || null;
+    },
+
+    cursadas: function () { return db.cursadas.slice(); },
+
+    cursada: function (id) {
+      return db.cursadas.find(function (c) { return c.id === id; }) || null;
+    },
+
+    /** Comisiones de una materia, ordenadas mañana → tarde → noche. */
+    cursadasDe: function (materiaId) {
+      var orden = ["manana", "tarde", "noche"];
+      return db.cursadas
+        .filter(function (c) { return c.materiaId === materiaId; })
+        .sort(function (a, b) { return orden.indexOf(a.turno) - orden.indexOf(b.turno); });
+    },
+
+    /** La cursada de una materia en un turno concreto (null si no se dicta). */
+    cursadaDe: function (materiaId, turno) {
+      return db.cursadas.find(function (c) {
+        return c.materiaId === materiaId && c.turno === turno;
+      }) || null;
+    },
+
+    /** Cursadas que ocupan un aula en un día de la semana (1 = lunes). */
+    cursadasDeAula: function (aulaId, dia) {
+      return db.cursadas.filter(function (c) {
+        return c.aulaId === aulaId && (dia === undefined || c.dias.indexOf(dia) !== -1);
+      });
+    },
+
+    /** ¿Otra cursada ocupa ya ese espacio en esos días y horas? */
+    choqueDeCursada: function (aulaId, dias, hIni, hFin, excluirId) {
+      return db.cursadas.some(function (c) {
+        if (c.aulaId !== aulaId || c.id === excluirId) return false;
+        var mismoDia = c.dias.some(function (d) { return dias.indexOf(d) !== -1; });
+        return mismoDia && hIni < c.horaFin && hFin > c.horaInicio;
+      });
+    },
+
+    guardarCursada: function (id, datos) {
+      var aula = Store.aula(Number(datos.aulaId));
+      if (!aula) return { ok: false, error: "El espacio seleccionado no existe." };
+
+      var dias = (datos.dias || []).map(Number).sort();
+      if (!dias.length) return { ok: false, error: "Elegí al menos un día de cursada." };
+
+      var hIni = Number(datos.horaInicio), hFin = Number(datos.horaFin);
+      if (!(hFin > hIni)) return { ok: false, error: "La hora de fin debe ser posterior a la de inicio." };
+
+      var turno = TURNOS[datos.turno];
+      if (!turno) return { ok: false, error: "Turno no válido." };
+      if (hIni < turno.hIni || hFin > turno.hFin) {
+        return { ok: false, error: "El turno " + turno.nombre.toLowerCase() + " va de " + turno.rango + "." };
+      }
+      if (Store.choqueDeCursada(aula.id, dias, hIni, hFin, id)) {
+        return { ok: false, error: "Ese espacio ya tiene otra cursada en ese día y horario." };
+      }
+
+      var existente = id ? Store.cursada(id) : null;
+      if (!existente) {
+        var duplicada = Store.cursadaDe(Number(datos.materiaId), datos.turno);
+        if (duplicada) return { ok: false, error: "Esa materia ya tiene comisión en el turno " + turno.nombre.toLowerCase() + "." };
+      }
+
+      var registro = existente || { id: nextId(db.cursadas), materiaId: Number(datos.materiaId) };
+      registro.turno = datos.turno;
+      registro.aulaId = aula.id;
+      registro.dias = dias;
+      registro.horaInicio = hIni;
+      registro.horaFin = hFin;
+      registro.docente = (datos.docente || "").trim();
+      registro.comision = (datos.comision || "").trim() ||
+                          (Store.materia(registro.materiaId).anio + turno.sigla);
+
+      if (!existente) db.cursadas.push(registro);
+      guardar();
+      return { ok: true, cursada: registro };
+    },
+
+    eliminarCursada: function (id) {
+      db.cursadas = db.cursadas.filter(function (c) { return c.id !== id; });
       guardar();
       return { ok: true };
     },
@@ -651,13 +915,13 @@
     /* --- Consultas de disponibilidad ---------------------------------- */
     /**
      * Filtra espacios y marca si están libres en la franja indicada.
-     * f = { texto, edificio, tipo, capacidad, equipamiento[], fecha, hIni, hFin, soloLibres }
+     * f = { texto, pabellon, tipo, capacidad, equipamiento[], fecha, hIni, hFin, soloLibres }
      */
     buscarAulas: function (f) {
       var texto = Utils.norm(f.texto || "");
       return db.aulas.filter(function (a) {
         if (f.soloActivas !== false && !a.activa) return false;
-        if (f.edificio && a.edificio !== f.edificio) return false;
+        if (f.pabellon && a.pabellon !== f.pabellon) return false;
         if (f.tipo && a.tipo !== f.tipo) return false;
         if (f.capacidad && a.capacidad < Number(f.capacidad)) return false;
         if (f.equipamiento && f.equipamiento.length) {
@@ -665,7 +929,7 @@
           if (!tiene) return false;
         }
         if (texto) {
-          var blob = Utils.norm(a.nombre + " " + a.codigo + " " + a.edificio + " " + a.tipo);
+          var blob = Utils.norm(a.nombre + " " + a.codigo + " " + a.pabellon + " " + a.tipo);
           if (blob.indexOf(texto) === -1) return false;
         }
         return true;

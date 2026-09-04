@@ -15,7 +15,7 @@
     fecha: null,
     hIni: 9,
     hFin: 11,
-    edificio: "",
+    pabellon: "",
     tipo: "",
     capacidad: "",
     equipamiento: [],
@@ -37,7 +37,7 @@
 
     var meta = '<span class="tag">' + UI.icon("grupo", 11) + " " + a.capacidad + " plazas</span>" +
                '<span class="tag">' + Utils.esc(a.tipo) + "</span>" +
-               (a.planta === 0 ? '<span class="tag">Planta baja</span>' : '<span class="tag">Planta ' + a.planta + "</span>");
+               (a.piso === 0 ? '<span class="tag">Planta baja</span>' : '<span class="tag">Piso ' + a.piso + "</span>");
 
     var equipo = a.equipamiento.slice(0, 3).map(function (e) {
       return '<span class="tag">' + Utils.esc(e) + "</span>";
@@ -46,7 +46,7 @@
     return '<article class="room' + (esTech ? " room--tech" : "") + (libre ? "" : " room--busy") + '">' +
       '<div class="room__head">' +
         "<div><div class=\"room__name\">" + Utils.esc(a.nombre) + "</div>" +
-        '<div class="room__place">' + Utils.esc(a.codigo) + " · " + Utils.esc(a.edificio) + "</div></div>" +
+        '<div class="room__place">' + Utils.esc(a.codigo) + " · " + Utils.esc(a.pabellon) + "</div></div>" +
         (libre ? '<span class="pill pill--ok"><span class="pill__dot"></span>Libre</span>'
                : '<span class="pill pill--err"><span class="pill__dot"></span>Ocupada</span>') +
       "</div>" +
@@ -93,7 +93,7 @@
 
     var cuerpo =
       '<div class="alert alert--info">' +
-        "<strong>" + Utils.esc(a.nombre) + "</strong> · " + Utils.esc(a.edificio) +
+        "<strong>" + Utils.esc(a.nombre) + "</strong> · " + Utils.esc(a.pabellon) +
         " · aforo " + a.capacidad + " · " + Utils.esc(a.tipo) +
       "</div>" +
       (aprobacion ? '<div class="alert alert--warn">Esta reserva quedará <strong>pendiente</strong> hasta que conserjería o un administrador la apruebe.</div>' : "") +
@@ -164,7 +164,7 @@
   /* --- Vista ------------------------------------------------------------ */
   Views.reservar = {
     titulo: "Buscar y reservar",
-    subtitulo: "Filtra por edificio, aforo o equipamiento y comprueba la disponibilidad real.",
+    subtitulo: "Filtra por pabellón, aforo o equipamiento y comprueba la disponibilidad real.",
     preparar: preparar,
 
     render: function (root) {
@@ -185,8 +185,8 @@
                   '<select id="fl-ini">' + UI.horaOptions(f.hIni, Store.HORA_INICIO, Store.HORA_FIN - 1) + "</select></div>" +
                 '<div class="field"><label class="field-label" for="fl-fin">Hasta</label>' +
                   '<select id="fl-fin">' + UI.horaOptions(f.hFin, Store.HORA_INICIO + 1, Store.HORA_FIN) + "</select></div>" +
-                '<div class="field"><label class="field-label" for="fl-edificio">Edificio</label>' +
-                  '<select id="fl-edificio">' + UI.options(Store.EDIFICIOS, f.edificio, "Todos") + "</select></div>" +
+                '<div class="field"><label class="field-label" for="fl-pabellon">Pabellón</label>' +
+                  '<select id="fl-pabellon">' + UI.options(Store.PABELLONES, f.pabellon, "Todos") + "</select></div>" +
                 '<div class="field"><label class="field-label" for="fl-tipo">Tipo de espacio</label>' +
                   '<select id="fl-tipo">' + UI.options(Store.TIPOS, f.tipo, "Todos") + "</select></div>" +
                 '<div class="field"><label class="field-label" for="fl-cap">Aforo mínimo</label>' +
@@ -220,7 +220,7 @@
         f.hIni = Number(UI.$("#fl-ini", root).value);
         f.hFin = Number(UI.$("#fl-fin", root).value);
         if (f.hFin <= f.hIni) { f.hFin = f.hIni + 1; UI.$("#fl-fin", root).value = String(f.hFin); }
-        f.edificio = UI.$("#fl-edificio", root).value;
+        f.pabellon = UI.$("#fl-pabellon", root).value;
         f.tipo = UI.$("#fl-tipo", root).value;
         f.capacidad = UI.$("#fl-cap", root).value;
         f.soloLibres = UI.$("#fl-libres", root).checked;
@@ -244,7 +244,7 @@
       }
 
       /* --- Eventos de los filtros --- */
-      ["fl-texto", "fl-fecha", "fl-ini", "fl-fin", "fl-edificio", "fl-tipo", "fl-cap", "fl-libres"].forEach(function (id) {
+      ["fl-texto", "fl-fecha", "fl-ini", "fl-fin", "fl-pabellon", "fl-tipo", "fl-cap", "fl-libres"].forEach(function (id) {
         var el = UI.$("#" + id, root);
         var evento = (el.tagName === "INPUT" && (el.type === "text" || el.type === "search" || el.type === "number"))
           ? "input" : "change";
@@ -261,7 +261,7 @@
       });
 
       UI.$("#fl-reset", root).addEventListener("click", function () {
-        f.texto = ""; f.edificio = ""; f.tipo = ""; f.capacidad = "";
+        f.texto = ""; f.pabellon = ""; f.tipo = ""; f.capacidad = "";
         f.equipamiento = []; f.soloLibres = true; f.pagina = 1;
         Views.reservar.render(root);
       });

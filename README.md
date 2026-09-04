@@ -1,8 +1,12 @@
 # ReservaAulas · Universidad del Salvador (USAL)
 
 Aplicación web para la **reserva de aulas y laboratorios de la facultad**: 200 aulas docentes
-y 3 Centros Tecnológicos (dos salas de PC y uno con brazo robótico). Proyecto de interfaces para la asignatura
+y 3 Centros Tecnológicos (dos salas de PC y uno con brazo robótico), repartidos en un único
+edificio con **Pabellón 1 y Pabellón 2**. Proyecto de interfaces para la asignatura
 *Sistemas de Información II*.
+
+Incluye un **Panel de Alumnos** público —pensado para el celular— donde el estudiante elige
+materia y turno y ve en grande el aula, el piso y el pabellón donde cursa.
 
 Identidad visual en **verde y blanco**, los colores institucionales de la Universidad del Salvador.
 
@@ -48,18 +52,29 @@ En la pantalla de acceso hay botones que rellenan las credenciales automáticame
 
 ## Las interfaces (la asignatura pedía un mínimo de 3)
 
-La aplicación tiene **8 pantallas**, todas con modo claro y modo oscuro:
+La aplicación tiene **10 pantallas**, todas con modo claro y modo oscuro y todas usables
+desde el celular:
 
 | # | Pantalla | Descripción |
 |---|----------|-------------|
-| 1 | **Acceso** | Login con validación, cuentas de demostración y selector de tema. |
-| 2 | **Panel de inicio** | Métricas del centro, ocupación por franja horaria, próximas reservas, agenda del día y ranking de espacios. |
-| 3 | **Buscar y reservar** | Filtros por texto, fecha, franja, edificio, tipo, aforo y equipamiento; resultados paginados con disponibilidad real y formulario de reserva. |
-| 4 | **Calendario semanal** | Rejilla franja × día de un espacio, navegación entre semanas, leyenda de estados y reserva pulsando sobre un hueco libre. |
-| 5 | **Mis reservas** | Listado filtrable con edición y cancelación. Los administradores pueden ver las de todo el centro. |
-| 6 | **Solicitudes** | Bandeja de aprobación: aprobar, rechazar con motivo, aviso de solapamientos e histórico de resoluciones. |
-| 7 | **Espacios** | Catálogo de las 203 salas: alta, edición, aforo, equipamiento y baja/desactivación. |
-| 8 | **Usuarios** | Alta de cuentas desde el perfil administrador, cambio de perfil, activación y borrado. |
+| 1 | **Panel de Alumnos** | Pantalla pública que se abre al iniciar. El alumno busca su materia, elige turno (mañana, tarde o noche) y ve en grande el aula, el pabellón y el piso, con días, horario, comisión y docente. Muestra también la misma materia en los otros turnos. |
+| 2 | **Acceso** | Login con validación, cuentas de demostración y selector de tema. |
+| 3 | **Panel de inicio** | Métricas del centro, ocupación por franja horaria, próximas reservas, agenda del día y ranking de espacios. |
+| 4 | **Buscar y reservar** | Filtros por texto, fecha, franja, pabellón, tipo, aforo y equipamiento; resultados paginados con disponibilidad real y formulario de reserva. |
+| 5 | **Calendario semanal** | Rejilla franja × día de un espacio, navegación entre semanas, leyenda de estados y reserva pulsando sobre un hueco libre. |
+| 6 | **Mis reservas** | Listado filtrable con edición y cancelación. Los administradores pueden ver las de todo el centro. |
+| 7 | **Solicitudes** | Bandeja de aprobación: aprobar, rechazar con motivo, aviso de solapamientos e histórico de resoluciones. |
+| 8 | **Espacios** | Catálogo de las 203 salas: alta, edición, aforo, equipamiento y baja/desactivación. |
+| 9 | **Usuarios** | Alta de cuentas desde el perfil administrador, cambio de perfil, activación y borrado. |
+| 10 | **Materias y horarios** | Plan completo de Ingeniería en Informática con una comisión por turno: qué aula, qué días y en qué horario cursa cada materia. Es la información que consulta el Panel de Alumnos. |
+
+### Punto de entrada
+
+Al abrir la aplicación se muestra el **Panel de Alumnos**. En el pie de esa pantalla hay un
+interruptor —*Abrir el panel de alumnos al iniciar la aplicación*— que, al desactivarlo, hace
+que la próxima vez se abra directamente el acceso al sistema de gestión. Desde el panel se
+entra al sistema con el botón *Acceso al sistema*, y desde el sistema se vuelve al panel con
+la opción *Panel de alumnos* del menú lateral.
 
 ---
 
@@ -78,16 +93,29 @@ La aplicación tiene **8 pantallas**, todas con modo claro y modo oscuro:
 
 ## Catálogo de espacios
 
-| Edificio | Espacios | Notas |
-|----------|----------|-------|
-| Edificio Central | Aulas 1–80 | Aulas ordinarias, seminarios y laboratorios informáticos |
-| Edificio Politécnico | Aulas 81–150 | Ídem |
-| Edificio Anexo | Aulas 151–200 | Ídem |
-| Centro Tecnológico | CT-1 y CT-2 | Salas de informática: 30 y 24 **PC** de sobremesa |
-| Centro Tecnológico | CT-3 | Único laboratorio con **brazo robótico** (UR5e con visión artificial); requiere autorización |
+Hay un solo edificio, dividido en dos pabellones. Cada pabellón tiene planta baja y tres
+pisos, con 25 aulas por piso.
+
+| Ubicación | Espacios | Notas |
+|-----------|----------|-------|
+| Pabellón 1 | Aulas 1–100 | Aulas 1–25 en planta baja, 26–50 en el piso 1, 51–75 en el 2 y 76–100 en el 3 |
+| Pabellón 2 | Aulas 101–200 | Mismo reparto por pisos |
+| Pabellón 2 · planta baja | CT-1 y CT-2 | Salas de informática: 30 y 24 **PC** de sobremesa |
+| Pabellón 2 · planta baja | CT-3 | Único laboratorio con **brazo robótico** (UR5e con visión artificial); requiere autorización |
 
 Los tipos se reparten automáticamente: las aulas múltiplo de 25 son **Aulas Magnas**, las
 múltiplo de 10 **laboratorios informáticos** y las múltiplo de 7 **seminarios**.
+
+## Plan de estudios
+
+Están cargadas las **48 materias** de Ingeniería en Informática (título intermedio: Analista
+de Sistemas de Información), con su año y su régimen anual (A) o cuatrimestral (C). *Inglés I*
+e *Inglés II* figuran sin régimen porque el plan tampoco lo indica.
+
+Cada materia tiene comisiones en dos o tres turnos —**mañana** (08:00 a 12:00), **tarde**
+(14:00 a 18:00) y **noche** (19:00 a 22:00)— con su aula, sus días y su horario. El reparto
+inicial se genera de forma automática evitando que dos materias coincidan en el mismo espacio,
+día y franja; desde *Materias y horarios* se puede reasignar cualquier comisión.
 
 ---
 
@@ -99,23 +127,29 @@ css/styles.css          Sistema de diseño: tokens de color, tema claro/oscuro y
 js/store.js             Capa de datos: modelo, validaciones y persistencia en localStorage
 js/ui.js                Componentes reutilizables: modal, avisos, píldoras, paginador
 js/app.js               Arranque, sesión, tema y navegación entre pantallas
-js/views/dashboard.js   Pantalla 2 · Panel de inicio
-js/views/reservar.js    Pantalla 3 · Buscar y reservar
-js/views/calendario.js  Pantalla 4 · Calendario semanal
-js/views/misreservas.js Pantalla 5 · Mis reservas
-js/views/solicitudes.js Pantalla 6 · Solicitudes pendientes
-js/views/usuarios.js    Pantalla 8 · Gestión de usuarios
-js/views/aulas.js       Pantalla 7 · Catálogo de espacios
+js/views/alumnos.js     Pantalla 1  · Panel de Alumnos
+js/views/dashboard.js   Pantalla 3  · Panel de inicio
+js/views/reservar.js    Pantalla 4  · Buscar y reservar
+js/views/calendario.js  Pantalla 5  · Calendario semanal
+js/views/misreservas.js Pantalla 6  · Mis reservas
+js/views/solicitudes.js Pantalla 7  · Solicitudes pendientes
+js/views/aulas.js       Pantalla 8  · Catálogo de espacios
+js/views/usuarios.js    Pantalla 9  · Gestión de usuarios
+js/views/materias.js    Pantalla 10 · Materias y horarios
 ```
 
 ## Consejos para la demo en clase
 
-1. Entra como `admin` → **Usuarios** → *Nuevo usuario*: crea una cuenta de docente delante del profesor.
-2. Cierra sesión y entra con esa cuenta → **Buscar y reservar**: filtra por *Brazo robótico*
-   (solo aparecerá el Centro Tecnológico 3) y resérvalo: verás que queda *pendiente*.
-3. Vuelve a entrar como `admin` o `conserjeria` → **Solicitudes**: apruébala.
-4. Abre el **Calendario** de ese espacio: la reserva aparece ya en verde.
-5. Pulsa el icono de la luna en la barra superior para enseñar el **modo oscuro**.
+1. Abrí la app en el celular: se ve el **Panel de Alumnos**. Buscá *Sistemas de Información II*,
+   tocá **Noche** y mostrá el aula, el pabellón y el piso en grande.
+2. Entrá al sistema como `admin` → **Materias y horarios**: cambiá el aula de esa comisión y
+   volvé al panel de alumnos (menú lateral) para ver el cambio reflejado.
+3. **Usuarios** → *Nuevo usuario*: creá una cuenta de docente delante del profesor.
+4. Cerrá sesión y entrá con esa cuenta → **Buscar y reservar**: filtrá por *Brazo robótico*
+   (solo aparece el Centro Tecnológico 3) y reservalo: queda *pendiente*.
+5. Volvé a entrar como `admin` o `conserjeria` → **Solicitudes**: aprobala.
+6. Abrí el **Calendario** de ese espacio: la reserva ya aparece en verde.
+7. Tocá el icono de la luna de la barra superior para mostrar el **modo oscuro**.
 
 Para volver a los datos de ejemplo desde cero, abre la consola del navegador y ejecuta:
 

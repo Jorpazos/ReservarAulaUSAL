@@ -65,7 +65,7 @@
           '<div class="list__body">' +
             "<strong>" + Utils.esc(a ? a.nombre : "Aula eliminada") + " · " + Utils.esc(r.asunto) + "</strong>" +
             "<span>" + Utils.hora(r.horaInicio) + " – " + Utils.hora(r.horaFin) +
-            (a ? " · " + Utils.esc(a.edificio) : "") + "</span>" +
+            (a ? " · " + Utils.esc(a.pabellon) : "") + "</span>" +
           "</div>" +
           UI.estadoPill(r.estado) +
         "</div>";
@@ -94,7 +94,7 @@
         return '<div class="list__item">' +
           '<div class="list__icon">' + (i + 1) + "º</div>" +
           '<div class="list__body"><strong>' + Utils.esc(t.aula.nombre) + "</strong>" +
-          "<span>" + Utils.esc(t.aula.edificio) + " · aforo " + t.aula.capacidad + "</span></div>" +
+          "<span>" + Utils.esc(t.aula.pabellon) + " · aforo " + t.aula.capacidad + "</span></div>" +
           '<span class="pill pill--soft">' + Utils.plural(t.total, "reserva", "reservas") + "</span>" +
         "</div>";
       }).join("") : UI.vacio("Sin datos este mes", "Todavía no se han registrado reservas.");

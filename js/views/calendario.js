@@ -19,7 +19,7 @@
     var gestiona = Store.esRol("admin", "gestor");
 
     var cuerpo = '<dl class="kv">' +
-      "<dt>Espacio</dt><dd>" + Utils.esc(a ? a.nombre + " · " + a.edificio : "—") + "</dd>" +
+      "<dt>Espacio</dt><dd>" + Utils.esc(a ? a.nombre + " · " + a.pabellon + " · " + (a.piso === 0 ? "planta baja" : "piso " + a.piso) : "—") + "</dd>" +
       "<dt>Fecha</dt><dd>" + Utils.fechaLarga(r.fecha) + "</dd>" +
       "<dt>Horario</dt><dd>" + Utils.hora(r.horaInicio) + " – " + Utils.hora(r.horaFin) + "</dd>" +
       "<dt>Solicitante</dt><dd>" + Utils.esc(Store.nombreUsuario(r.usuarioId)) + "</dd>" +
@@ -74,9 +74,9 @@
       if (!estado.aulaId || !Store.aula(estado.aulaId)) estado.aulaId = aulas[0].id;
       if (!estado.lunes) estado.lunes = Utils.lunesDe(Utils.hoy());
 
-      // Selector agrupado por edificio
+      // Selector agrupado por pabellón
       var grupos = {};
-      aulas.forEach(function (a) { (grupos[a.edificio] = grupos[a.edificio] || []).push(a); });
+      aulas.forEach(function (a) { (grupos[a.pabellon] = grupos[a.pabellon] || []).push(a); });
       var selectAulas = Object.keys(grupos).map(function (ed) {
         return '<optgroup label="' + Utils.esc(ed) + '">' +
           grupos[ed].map(function (a) {

@@ -133,7 +133,7 @@
                            (r.usuarioId === usuario.id || esAdmin);
             return "<tr>" +
               '<td class="cell-strong">' + Utils.esc(a ? a.nombre : "Aula eliminada") +
-                '<span class="cell-sub">' + Utils.esc(a ? a.edificio : "") + "</span></td>" +
+                '<span class="cell-sub">' + Utils.esc(a ? a.pabellon : "") + "</span></td>" +
               '<td class="nowrap">' + Utils.fechaCorta(r.fecha) +
                 '<span class="cell-sub">' + Utils.DIAS[Utils.parse(r.fecha).getDay()] + "</span></td>" +
               '<td class="nowrap tnum">' + Utils.hora(r.horaInicio) + " – " + Utils.hora(r.horaFin) + "</td>" +

@@ -5,6 +5,7 @@
   "use strict";
 
   var TEMA_KEY = "reservaaulas.tema";
+  var INICIO_KEY = "reservaaulas.inicio";   // "alumnos" (por defecto) o "sistema"
 
   /* --- Mapa de pantallas ------------------------------------------------ */
   var MENU = [
@@ -13,9 +14,11 @@
     { id: "reservar",    texto: "Buscar y reservar", icono: "buscar" },
     { id: "calendario",  texto: "Calendario",        icono: "calendario" },
     { id: "misreservas", texto: "Mis reservas",      icono: "lista" },
+    { accion: "alumnos", texto: "Panel de alumnos",  icono: "grupo" },
 
     { grupo: "Administración", roles: ["admin", "gestor"] },
     { id: "solicitudes", texto: "Solicitudes",       icono: "inbox",    roles: ["admin", "gestor"], badge: "pendientes" },
+    { id: "materias",    texto: "Materias y horarios", icono: "lista",  roles: ["admin", "gestor"] },
     { id: "aulas",       texto: "Espacios",          icono: "edificio", roles: ["admin", "gestor"] },
     { id: "usuarios",    texto: "Usuarios",          icono: "usuarios", roles: ["admin"] }
   ];
@@ -52,6 +55,10 @@
     var nav = UI.$("#main-nav");
     nav.innerHTML = MENU.filter(puedeVer).map(function (item) {
       if (item.grupo) return '<div class="nav__group">' + Utils.esc(item.grupo) + "</div>";
+      if (item.accion) {
+        return '<button class="nav__item" data-accion="' + item.accion + '">' +
+          UI.icon(item.icono, 17) + "<span>" + Utils.esc(item.texto) + "</span></button>";
+      }
       return '<button class="nav__item" data-vista="' + item.id + '">' +
         UI.icon(item.icono, 17) + "<span>" + Utils.esc(item.texto) + "</span>" +
         (item.badge ? '<span class="nav__badge" data-badge="' + item.badge + '" hidden>0</span>' : "") +
@@ -94,13 +101,38 @@
     refrescarBadges();
   }
 
+  /* --- Cambio entre las tres pantallas principales ---------------------- */
+  function mostrarPantalla(cual) {
+    UI.$("#alumnos-screen").hidden = cual !== "alumnos";
+    UI.$("#login-screen").hidden = cual !== "login";
+    UI.$("#app-shell").hidden = cual !== "app";
+    window.scrollTo({ top: 0 });
+  }
+
+  function inicioPreferido() {
+    try { return localStorage.getItem(INICIO_KEY) || "alumnos"; } catch (e) { return "alumnos"; }
+  }
+
+  /** Panel de alumnos: público, no necesita sesión. */
+  function verAlumnos() {
+    UI.closeModal();
+    mostrarPantalla("alumnos");
+    UI.$("#alu-inicio").checked = inicioPreferido() === "alumnos";
+    UI.$("#alu-sistema").textContent = Store.usuarioActual() ? "Volver al sistema" : "Acceso al sistema";
+    Views.alumnos.render();
+  }
+
+  function verLogin() {
+    mostrarPantalla("login");
+    UI.$("#login-error").hidden = true;
+  }
+
   /* --- Sesión ----------------------------------------------------------- */
   function entrarEnApp() {
     var u = Store.usuarioActual();
     if (!u) return;
 
-    UI.$("#login-screen").hidden = true;
-    UI.$("#app-shell").hidden = false;
+    mostrarPantalla("app");
 
     UI.$("#side-name").textContent = u.nombre;
     UI.$("#side-role").textContent = Store.ROLES[u.rol].nombre + (u.departamento ? " · " + u.departamento : "");
@@ -115,11 +147,10 @@
   function salir() {
     Store.logout();
     UI.closeModal();
-    UI.$("#app-shell").hidden = true;
-    UI.$("#login-screen").hidden = false;
     UI.$("#login-form").reset();
-    UI.$("#login-error").hidden = true;
     vistaActual = null;
+    // Al cerrar sesión se vuelve al punto de entrada elegido.
+    if (inicioPreferido() === "alumnos") verAlumnos(); else verLogin();
   }
 
   /* --- Pantalla de acceso ----------------------------------------------- */
@@ -169,6 +200,27 @@
     });
 
     UI.$("#login-theme-toggle").addEventListener("click", alternarTema);
+    UI.$("#login-volver").addEventListener("click", verAlumnos);
+  }
+
+  /* --- Panel de alumnos ------------------------------------------------- */
+  function initAlumnos() {
+    UI.$("#alu-theme-toggle").addEventListener("click", alternarTema);
+
+    UI.$("#alu-sistema").addEventListener("click", function () {
+      if (Store.usuarioActual()) entrarEnApp(); else verLogin();
+    });
+
+    // Interruptor: abrir (o no) este panel al iniciar la aplicación.
+    UI.$("#alu-inicio").addEventListener("change", function () {
+      var valor = this.checked ? "alumnos" : "sistema";
+      try { localStorage.setItem(INICIO_KEY, valor); } catch (e) { /* modo privado */ }
+      UI.toast(
+        this.checked ? "Se abrirá el panel de alumnos" : "Se abrirá el acceso al sistema",
+        "Podés cambiarlo cuando quieras desde acá.",
+        "ok"
+      );
+    });
   }
 
   /* --- Arranque --------------------------------------------------------- */
@@ -177,6 +229,7 @@
     Store.init();
     UI.initModal();
     initLogin();
+    initAlumnos();
 
     UI.$("#theme-toggle").addEventListener("click", alternarTema);
     UI.$("#logout-btn").addEventListener("click", function () {
@@ -193,20 +246,26 @@
       ir(btn.getAttribute("data-vista"));
     });
 
+    UI.on(document, "click", '[data-accion="alumnos"]', function () { verAlumnos(); });
+
     // Menú lateral en pantallas pequeñas
     var shell = UI.$("#app-shell");
     UI.$("#sidebar-open").addEventListener("click", function () { shell.classList.add("nav-open"); });
     UI.$("#sidebar-close").addEventListener("click", function () { shell.classList.remove("nav-open"); });
     UI.$("#sidebar-backdrop").addEventListener("click", function () { shell.classList.remove("nav-open"); });
 
-    // Si había sesión iniciada, se restaura
+    // Punto de entrada: sesión abierta → sistema; si no, la preferencia guardada.
     if (Store.usuarioActual()) entrarEnApp();
+    else if (inicioPreferido() === "sistema") verLogin();
+    else verAlumnos();
   }
 
   global.App = {
     init: init,
     ir: ir,
     salir: salir,
+    verAlumnos: verAlumnos,
+    verLogin: verLogin,
     refrescarBadges: refrescarBadges,
     alternarTema: alternarTema,
     vistaActual: function () { return vistaActual; }
