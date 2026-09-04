@@ -1,8 +1,10 @@
-# ReservaAulas · USAL
+# ReservaAulas · Universidad del Salvador (USAL)
 
 Aplicación web para la **reserva de aulas y laboratorios de la facultad**: 200 aulas docentes
 y 3 Centros Tecnológicos con brazo robótico. Proyecto de interfaces para la asignatura
 *Sistemas de Información II*.
+
+Identidad visual en **verde y blanco**, los colores institucionales de la Universidad del Salvador.
 
 Funciona **sin instalar nada**: es HTML, CSS y JavaScript puro. Los datos se guardan en el
 `localStorage` del navegador, así que las reservas y los usuarios que crees se conservan

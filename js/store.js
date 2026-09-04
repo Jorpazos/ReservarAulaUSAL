@@ -202,19 +202,19 @@
 
   function seedUsuarios() {
     return [
-      { id: 1, usuario: "admin", nombre: "Jorge Pazos", email: "admin@usal.es",
+      { id: 1, usuario: "admin", nombre: "Jorge Pazos", email: "admin@usal.edu.ar",
         rol: "admin", departamento: "Servicios Informáticos", pass: "admin123", activo: true,
         creado: Utils.hoy() },
-      { id: 2, usuario: "mgarcia", nombre: "María García", email: "mgarcia@usal.es",
+      { id: 2, usuario: "mgarcia", nombre: "María García", email: "mgarcia@usal.edu.ar",
         rol: "docente", departamento: "Informática y Automática", pass: "profesor123", activo: true,
         creado: Utils.hoy() },
-      { id: 3, usuario: "conserjeria", nombre: "Antonio Ruiz", email: "conserjeria@usal.es",
+      { id: 3, usuario: "conserjeria", nombre: "Antonio Ruiz", email: "conserjeria@usal.edu.ar",
         rol: "gestor", departamento: "Conserjería", pass: "conserje123", activo: true,
         creado: Utils.hoy() },
-      { id: 4, usuario: "jlopez", nombre: "Javier López", email: "jlopez@usal.es",
+      { id: 4, usuario: "jlopez", nombre: "Javier López", email: "jlopez@usal.edu.ar",
         rol: "docente", departamento: "Matemáticas", pass: "profesor123", activo: true,
         creado: Utils.hoy() },
-      { id: 5, usuario: "lmartin", nombre: "Lucía Martín", email: "lmartin@usal.es",
+      { id: 5, usuario: "lmartin", nombre: "Lucía Martín", email: "lmartin@usal.edu.ar",
         rol: "estudiante", departamento: "Delegación de Alumnos", pass: "alumno123", activo: true,
         creado: Utils.hoy() }
     ];

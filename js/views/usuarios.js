@@ -19,7 +19,7 @@
         '<div class="field"><label for="us-usuario">Usuario de acceso</label>' +
           '<input type="text" id="us-usuario" value="' + Utils.esc(u.usuario) + '" placeholder="mgarcia"></div>' +
         '<div class="field"><label for="us-email">Correo institucional</label>' +
-          '<input type="email" id="us-email" value="' + Utils.esc(u.email) + '" placeholder="mgarcia@usal.es"></div>' +
+          '<input type="email" id="us-email" value="' + Utils.esc(u.email) + '" placeholder="mgarcia@usal.edu.ar"></div>' +
         '<div class="field"><label for="us-rol">Perfil</label><select id="us-rol">' +
           UI.options(Object.keys(Store.ROLES).map(function (k) {
             return { valor: k, texto: Store.ROLES[k].nombre };

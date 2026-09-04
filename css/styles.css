@@ -6,15 +6,15 @@
 
 /* ---------- 1. Tokens ---------------------------------------------------- */
 :root {
-  /* Marca (granate USAL) */
-  --brand-50:  #fdf3f4;
-  --brand-100: #fbe3e6;
-  --brand-200: #f5c3c9;
-  --brand-400: #cf5c69;
-  --brand-500: #b03040;
-  --brand-600: #8e1e2d;
-  --brand-700: #731725;
-  --brand-900: #45101a;
+  /* Marca (verde institucional · Universidad del Salvador) */
+  --brand-50:  #edf7f1;
+  --brand-100: #d6ecdf;
+  --brand-200: #a9d8bd;
+  --brand-400: #3f9d6c;
+  --brand-500: #1c7a4a;
+  --brand-600: #0f6236;
+  --brand-700: #0a4d2a;
+  --brand-900: #06301b;
 
   /* Neutros */
   --bg:            #f5f6f8;
@@ -57,14 +57,14 @@
 }
 
 [data-theme="dark"] {
-  --brand-50:  #2a1116;
-  --brand-100: #3a161d;
-  --brand-200: #56202a;
-  --brand-400: #e0808c;
-  --brand-500: #d2606f;
-  --brand-600: #c04c5d;
-  --brand-700: #a63a4a;
-  --brand-900: #f0c3c9;
+  --brand-50:  #0d2418;
+  --brand-100: #12301f;
+  --brand-200: #1d4a30;
+  --brand-400: #5fca8e;
+  --brand-500: #46b578;
+  --brand-600: #34a165;
+  --brand-700: #2a8555;
+  --brand-900: #c2e9d2;
 
   --bg:            #0f1319;
   --bg-elevated:   #171c25;
@@ -305,7 +305,7 @@ select {
 [data-theme="dark"] .login-brand {
   background:
     radial-gradient(1100px 620px at 12% 8%, rgba(255,255,255,.08), transparent 60%),
-    linear-gradient(150deg, #4a1220 0%, #33101a 55%, #1a0b10 100%);
+    linear-gradient(150deg, #10402a 0%, #0b2c1d 55%, #061510 100%);
 }
 .login-brand::after {
   content: ""; position: absolute; inset: 0;
@@ -415,7 +415,7 @@ select {
 .nav__item svg { flex: none; }
 .nav__badge {
   margin-left: auto; min-width: 20px; padding: 1px 6px;
-  border-radius: 999px; background: var(--brand-500); color: #fff;
+  border-radius: 999px; background: var(--warn-fg); color: var(--bg-elevated);
   font-size: 11px; font-weight: 700; text-align: center;
 }
 
