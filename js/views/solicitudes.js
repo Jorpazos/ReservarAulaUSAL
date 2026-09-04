@@ -38,7 +38,7 @@
         '<div class="stack fade-in">' +
           '<div class="alert alert--info mb-0">' +
             "Requieren autorización las reservas de <strong>estudiantes</strong>, de <strong>Aulas Magnas</strong> " +
-            "y de los <strong>Centros Tecnológicos</strong> de brazo robótico." +
+            "y del <strong>Centro Tecnológico 3</strong>, el laboratorio de brazo robótico." +
           "</div>" +
           '<div class="card">' +
             '<div class="card__head"><h3>' + UI.icon("inbox", 16) + " Bandeja de entrada</h3>" +

@@ -100,7 +100,7 @@
   /* ---------------------------------------------------------------------
      Constantes del dominio
      --------------------------------------------------------------------- */
-  var KEY = "reservaaulas.usal.v1";
+  var KEY = "reservaaulas.usal.v2";
 
   var HORA_INICIO = 8;   // primera franja: 08:00
   var HORA_FIN = 21;     // última franja termina a las 21:00
@@ -175,11 +175,23 @@
       });
     }
 
-    // Centros Tecnológicos: laboratorios de brazo robótico
+    // Centros Tecnológicos: dos salas de informática y una de robótica
     var ct = [
-      { n: 1, cap: 16, nota: "Brazo robótico UR5e · prácticas de manipulación" },
-      { n: 2, cap: 20, nota: "Brazo robótico ABB IRB 120 · célula de montaje" },
-      { n: 3, cap: 24, nota: "Célula colaborativa · visión artificial y brazo robótico" }
+      {
+        n: 1, cap: 30, tipo: "Laboratorio Informático",
+        equipo: ["Ordenadores", "Proyector", "Enchufes por puesto", "Pizarra digital"],
+        auth: false, nota: "30 PC de sobremesa · prácticas de programación"
+      },
+      {
+        n: 2, cap: 24, tipo: "Laboratorio Informático",
+        equipo: ["Ordenadores", "Proyector", "Enchufes por puesto", "Videoconferencia"],
+        auth: false, nota: "24 PC · diseño asistido, simulación y trabajos en grupo"
+      },
+      {
+        n: 3, cap: 16, tipo: "Laboratorio de Robótica",
+        equipo: ["Brazo robótico", "Ordenadores", "Proyector", "Enchufes por puesto"],
+        auth: true, nota: "Brazo robótico UR5e con visión artificial · única célula del centro"
+      }
     ];
     ct.forEach(function (c) {
       aulas.push({
@@ -188,10 +200,10 @@
         nombre: "Centro Tecnológico " + c.n,
         edificio: "Centro Tecnológico",
         planta: 0,
-        tipo: "Laboratorio de Robótica",
+        tipo: c.tipo,
         capacidad: c.cap,
-        equipamiento: ["Brazo robótico", "Ordenadores", "Proyector", "Enchufes por puesto"],
-        requiereAutorizacion: true,
+        equipamiento: c.equipo,
+        requiereAutorizacion: c.auth,
         activa: true,
         nota: c.nota
       });
@@ -232,9 +244,9 @@
       ["Aula 25",  0, 12, 14, 4, "Examen parcial",        "Álgebra Lineal",             "confirmada", 150],
       ["Aula 40",  1, 16, 18, 2, "Prácticas de laboratorio", "Bases de Datos",          "confirmada", 30],
       ["Aula 7",   1, 10, 12, 4, "Tutoría grupal",        "Cálculo I",                  "confirmada", 18],
-      ["Centro Tecnológico 1", 1, 9, 13, 2, "Prácticas de brazo robótico", "Robótica Industrial", "confirmada", 16],
-      ["Centro Tecnológico 2", 3, 15, 19, 4, "Proyecto fin de grado",       "TFG Automática",      "pendiente", 12],
-      ["Centro Tecnológico 3", 2, 10, 12, 5, "Taller de la Delegación",     "Actividad estudiantil", "pendiente", 20],
+      ["Centro Tecnológico 1", 1, 9, 13, 2, "Prácticas en sala de PC",     "Programación I",      "confirmada", 28],
+      ["Centro Tecnológico 2", 2, 10, 12, 5, "Taller de la Delegación",    "Actividad estudiantil", "pendiente", 20],
+      ["Centro Tecnológico 3", 3, 15, 19, 4, "Prácticas de brazo robótico", "Robótica Industrial", "pendiente", 12],
       ["Aula 101", 3, 8,  10, 2, "Seminario invitado",    "Ingeniería del Software",    "confirmada", 70],
       ["Aula 150", 4, 17, 20, 5, "Charla de asociación",  "Actividad estudiantil",      "pendiente", 90],
       ["Aula 60",  2, 15, 17, 4, "Recuperación de clase", "Estadística",                "rechazada", 45],
@@ -242,11 +254,17 @@
     ];
 
     var id = 1;
+    var hoy = Utils.hoy();
     return base.map(function (r) {
+      // Si el día de la semana ya pasó, la reserva de ejemplo se traslada a la
+      // semana siguiente: así la demo siempre muestra actividad próxima.
+      var fecha = Utils.addDays(lunes, r[1]);
+      if (fecha < hoy) fecha = Utils.addDays(fecha, 7);
+
       return {
         id: id++,
         aulaId: byName[r[0]],
-        fecha: Utils.addDays(lunes, r[1]),
+        fecha: fecha,
         horaInicio: r[2],
         horaFin: r[3],
         usuarioId: r[4],
@@ -270,7 +288,7 @@
   function nuevaBase() {
     var aulas = seedAulas();
     return {
-      version: 1,
+      version: 2,
       usuarios: seedUsuarios(),
       aulas: aulas,
       reservas: seedReservas(aulas),
@@ -291,7 +309,7 @@
       var raw = localStorage.getItem(KEY);
       if (raw) {
         var parsed = JSON.parse(raw);
-        if (parsed && parsed.version === 1 && parsed.aulas && parsed.usuarios) return parsed;
+        if (parsed && parsed.version === 2 && parsed.aulas && parsed.usuarios) return parsed;
       }
     } catch (e) {
       console.warn("Datos guardados no válidos, se regeneran:", e);

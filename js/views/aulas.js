@@ -94,7 +94,7 @@
 
   Views.aulas = {
     titulo: "Catálogo de espacios",
-    subtitulo: "200 aulas docentes y 3 Centros Tecnológicos de brazo robótico.",
+    subtitulo: "200 aulas docentes y 3 Centros Tecnológicos: dos salas de PC y el laboratorio de brazo robótico.",
     roles: ["admin", "gestor"],
 
     render: function (root) {

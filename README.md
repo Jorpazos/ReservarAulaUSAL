@@ -1,7 +1,7 @@
 # ReservaAulas · Universidad del Salvador (USAL)
 
 Aplicación web para la **reserva de aulas y laboratorios de la facultad**: 200 aulas docentes
-y 3 Centros Tecnológicos con brazo robótico. Proyecto de interfaces para la asignatura
+y 3 Centros Tecnológicos (dos salas de PC y uno con brazo robótico). Proyecto de interfaces para la asignatura
 *Sistemas de Información II*.
 
 Identidad visual en **verde y blanco**, los colores institucionales de la Universidad del Salvador.
@@ -71,7 +71,7 @@ La aplicación tiene **8 pantallas**, todas con modo claro y modo oscuro:
 - **Aforo**: no se admiten más asistentes que plazas tiene el aula.
 - **No se reserva en el pasado**.
 - **Aprobación**: quedan *pendientes* las reservas de estudiantes, las de Aulas Magnas y las
-  de los tres Centros Tecnológicos de brazo robótico. Las de docencia ordinaria se confirman
+  del Centro Tecnológico 3, el laboratorio de brazo robótico. Las de docencia ordinaria se confirman
   directamente.
 - **Integridad**: no se elimina un aula con reservas activas (hay que desactivarla), ni el
   último administrador del sistema.
@@ -83,7 +83,8 @@ La aplicación tiene **8 pantallas**, todas con modo claro y modo oscuro:
 | Edificio Central | Aulas 1–80 | Aulas ordinarias, seminarios y laboratorios informáticos |
 | Edificio Politécnico | Aulas 81–150 | Ídem |
 | Edificio Anexo | Aulas 151–200 | Ídem |
-| Centro Tecnológico | CT-1, CT-2, CT-3 | Laboratorios de **brazo robótico** (UR5e, ABB IRB 120 y célula colaborativa) |
+| Centro Tecnológico | CT-1 y CT-2 | Salas de informática: 30 y 24 **PC** de sobremesa |
+| Centro Tecnológico | CT-3 | Único laboratorio con **brazo robótico** (UR5e con visión artificial); requiere autorización |
 
 Los tipos se reparten automáticamente: las aulas múltiplo de 25 son **Aulas Magnas**, las
 múltiplo de 10 **laboratorios informáticos** y las múltiplo de 7 **seminarios**.
@@ -111,7 +112,7 @@ js/views/aulas.js       Pantalla 7 · Catálogo de espacios
 
 1. Entra como `admin` → **Usuarios** → *Nuevo usuario*: crea una cuenta de docente delante del profesor.
 2. Cierra sesión y entra con esa cuenta → **Buscar y reservar**: filtra por *Brazo robótico*
-   y reserva un Centro Tecnológico (verás que queda *pendiente*).
+   (solo aparecerá el Centro Tecnológico 3) y resérvalo: verás que queda *pendiente*.
 3. Vuelve a entrar como `admin` o `conserjeria` → **Solicitudes**: apruébala.
 4. Abre el **Calendario** de ese espacio: la reserva aparece ya en verde.
 5. Pulsa el icono de la luna en la barra superior para enseñar el **modo oscuro**.
